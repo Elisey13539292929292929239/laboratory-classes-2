@@ -1,3 +1,4 @@
+const { getInfoLog, getErrorLog, getProcessLog } = require("../utils/logger");
 const { homeRouting } = require("./home");
 const { productRouting } = require("./product");
 const { logoutRouting } = require("./logout");
@@ -5,9 +6,9 @@ const { STATUS_CODE } = require("../constants/statusCode");
 
 const requestRouting = (request, response) => {
   const { url, method } = request;
-  console.log(
-    `INFO (${new Date(Date.now()).toUTCString()}): ${method} - ${url}`
-  );
+
+  // Лог запроса
+  console.log(getInfoLog(request));
 
   if (url === "/") {
     return homeRouting(method, response);
@@ -22,11 +23,8 @@ const requestRouting = (request, response) => {
   }
 
   if (url === "/kill") {
-    console.log(
-      `PROCESS (${new Date(
-        Date.now()
-      ).toUTCString()}): logout has been initiated and the application will be closed.`
-    );
+    // Лог процесса
+    console.log(getProcessLog("logout"));
     process.exit();
   }
 
@@ -35,11 +33,8 @@ const requestRouting = (request, response) => {
   response.write("<html><body><h1>404 - Not Found</h1></body></html>");
   response.end();
 
-  console.warn(
-    `ERROR (${new Date(
-      Date.now()
-    ).toUTCString()}): requested url ${url} doesn't exist.`
-  );
+  // Лог ошибки
+  console.warn(getErrorLog(new Error(`requested url ${url} doesn't exist`)));
 };
 
 module.exports = { requestRouting };
